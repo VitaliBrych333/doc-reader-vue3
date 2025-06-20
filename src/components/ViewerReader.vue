@@ -339,7 +339,7 @@ export default {
 
       element?.scrollIntoView({ behavior: 'auto', block: 'start' })
 
-      if (targetPage.numPage === 1) {
+      if (targetPage?.numPage === 1) {
         elementWrapper?.scrollBy(0, -60) // for the first page of docs (to show the name doc)
       } else {
         elementWrapper?.scrollBy(0, -5)

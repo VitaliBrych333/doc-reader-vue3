@@ -338,7 +338,7 @@ export default {
         storeDocument.setInProgress(false)
 
         if (response.ok) {
-          this.$router.push({ name: 'docReader' })
+          this.$emit('refresh')
         } else {
           this.showMessage('Some failed', 'Could not save the documents!', true)
         }
@@ -365,6 +365,7 @@ export default {
         return
       }
 
+      storeDocument.clearDocumentsStack()
       localStorage.removeItem(document.location.origin)
       this.$router.push({ name: 'login' })
     },
