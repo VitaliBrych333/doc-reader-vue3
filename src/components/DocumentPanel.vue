@@ -43,7 +43,9 @@ export default {
   },
 
   mounted() {
-    this.setDocumentInfo()
+    if (this.activeDoc) {
+      this.setDocumentInfo()
+    }
   },
 
   watch: {
