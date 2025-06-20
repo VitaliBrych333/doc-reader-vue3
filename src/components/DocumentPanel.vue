@@ -96,6 +96,15 @@ export default {
 }
 </script>
 <template>
+  <div v-if="storeDocument.inProgress" class="spinner">
+    <v-progress-circular
+      color="deep-orange-lighten-1"
+      indeterminate
+      size="90"
+      width="8"
+    ></v-progress-circular>
+  </div>
+
   <DialogWindow
     v-if="showRename"
     :modelValue="showRename"
@@ -185,5 +194,17 @@ export default {
 .doc-name, .doc-id, .count {
   font-size: 18px;
   margin-bottom: 20px;
+}
+
+.spinner {
+  position: absolute;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+}
+
+.spinner div {
+  top: calc(50% - 45px);
+  left: calc(50% - 45px);
 }
 </style>

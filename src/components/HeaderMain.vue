@@ -435,6 +435,7 @@ export default {
       }
 
       this.actionBtn = null
+      this.selectedSortType = SortType.NONE
       this.$emit('refresh')
     },
 
@@ -1004,7 +1005,16 @@ export default {
         :location="$vuetify.display.mobile ? 'top' : undefined"
         temporary
       >
-        <div class="search">
+        <div v-if="storeDocument.inProgress" class="spinner">
+          <v-progress-circular
+            color="deep-orange-lighten-1"
+            indeterminate
+            size="90"
+            width="8"
+          ></v-progress-circular>
+        </div>
+
+        <div v-if="!storeDocument.inProgress" class="search">
           <v-text-field
             class="mr-1"
             label="Search"
@@ -1335,6 +1345,18 @@ export default {
 .custom-option.selected {
   color: white;
   background-color: #1867c0;
+}
+
+.spinner {
+  position: absolute;
+  z-index: 999;
+  width: 100%;
+  height: 100%;
+}
+
+.spinner div {
+  top: calc(50% - 45px);
+  left: calc(50% - 45px);
 }
 
 @media only screen and (max-width: 1830px) {
