@@ -320,7 +320,7 @@ export default {
       try {
         storeDocument.setInProgress(true)
 
-        const newDocuments = await this.getNewDocuments()
+        const newDocuments = this.isEditMode ? []: await this.getNewDocuments()
         const objUser = localStorage.getItem(document.location.origin)
         const userId = JSON.parse(objUser).user_Id
         const data: IReqSaveDocuments = {
