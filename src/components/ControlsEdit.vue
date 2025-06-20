@@ -420,8 +420,6 @@ export default {
         .forEach((page) => storeDocument.addSelectedPageId(page.pageId, true))
 
       this.handleCreate(docName, indexTargetDoc + 1, true)
-
-      storeDocument.addDocumentsStack()
     },
   },
 }
