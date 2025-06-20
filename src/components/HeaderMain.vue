@@ -360,7 +360,7 @@ export default {
     closeMode() {
       this.actionBtn = null
 
-      if (this.isCompareView || this.isWrappedView || this.isEditMode) {
+      if (this.isWrappedView || this.isEditMode) {
         this.$router.push({ name: 'docReader' })
         return
       }
