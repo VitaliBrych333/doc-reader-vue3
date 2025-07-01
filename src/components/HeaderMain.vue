@@ -93,7 +93,7 @@ export default {
   },
 
   watch: {
-    activePageId(newPageId, oldPageId) {
+    activePageId(newPageId) {
       if (newPageId) {
         this.activeDoc = storeDocument.documents.find((doc) =>
           doc.pages.map((page) => page.pageId).includes(newPageId),
@@ -246,7 +246,7 @@ export default {
 
           storeDocument.addDocument(doc, positionIndex)
         })
-      } catch (err) {
+      } catch {
         this.showMessage('Some failed', 'Could not create new document!', true)
       }
 
@@ -298,6 +298,7 @@ export default {
               doc.id = newDoc.id
               doc.name = newDoc.name
               doc.file = btoa(file)
+              // eslint-disable-next-line @typescript-eslint/no-unused-vars
               doc.pages = newDoc.pages.map((page) => (({ url, ...rest }) => rest)(page) as IPage)
               doc.info = newDoc.info
 
@@ -342,7 +343,7 @@ export default {
         } else {
           this.showMessage('Some failed', 'Could not save the documents!', true)
         }
-      } catch (err) {
+      } catch {
         this.showMessage('Some failed', 'Could not save the documents!', true)
       }
     },
@@ -421,7 +422,7 @@ export default {
       }
     },
 
-    clickOutSideSelectZoom(event: PointerEvent) {
+    clickOutSideSelectZoom() {
       if (this.showZoomOptions) {
         this.toggleSelectMenu()
       }
@@ -535,7 +536,7 @@ export default {
       try {
         w.addEventListener('beforeunload', () => URL.revokeObjectURL(url), { once: true })
         w.print()
-      } catch (err) {
+      } catch {
         URL.revokeObjectURL(url)
       }
     },

@@ -43,3 +43,7 @@ npm run test:unit
 ```sh
 npm run lint
 ```
+
+
+
+ "build": "run-p type-check \"build-only {@}\" --",

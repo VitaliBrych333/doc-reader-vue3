@@ -109,6 +109,7 @@ export const storeDocument = reactive({
         value: {
           id,
           positionIndex,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           page: (({ url, ...rest }) => rest)(page) as IPage,
         },
       })
@@ -128,6 +129,7 @@ export const storeDocument = reactive({
         positionIndex,
         doc: {
           ...doc,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           pages: doc.pages.map((page) => (({ url, ...rest }) => rest)(page) as IPage),
         },
       },
@@ -259,6 +261,7 @@ export const storeDocument = reactive({
         type: ActionType.DELETE_PAGE,
         value: {
           id: targetDoc?.id,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           page: (({ url, ...rest }) => rest)(targetPage) as IPage,
         },
       })
@@ -360,6 +363,7 @@ export const storeDocument = reactive({
       if (page.rotate !== 0) {
         this.rotatePages = [...this.rotatePages].concat({
           id: targetDocId,
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           page: (({ url, ...rest }) => rest)(page) as IPage,
         })
       }

@@ -26,7 +26,7 @@ export default {
   },
 
   methods: {
-    onLoaded(value) {
+    onLoaded() {
       this.inProgress = false
 
       if (this.isLatestPageAllDocs && !this.isLastPageAllDocsLoaded) {

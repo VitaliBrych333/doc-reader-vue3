@@ -49,7 +49,7 @@ export default {
   },
 
   watch: {
-    activeDoc(newDoc, oldDoc) {
+    activeDoc(newDoc) {
       if (newDoc) {
         this.setDocumentInfo()
       }

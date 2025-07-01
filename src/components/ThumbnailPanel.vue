@@ -34,7 +34,7 @@ export default {
   },
 
   watch: {
-    activePageId(newPageId, oldPageId) {
+    activePageId(newPageId) {
       if (newPageId) {
         this.navigateToPage(newPageId)
       }
@@ -65,7 +65,7 @@ export default {
       this.selectAll = storeDocument.selectedPageIds.length === storeDocument.getAllPages().length
     },
 
-    clickWrapper(event: PointerEvent) {
+    clickWrapper() {
       storeDocument.clearSelectedDocIds()
       storeDocument.clearSelectedPageIds()
       this.selectAll = false

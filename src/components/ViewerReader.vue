@@ -179,7 +179,7 @@ export default {
         if (!storeDocument.selectedDocIds.includes(docId)) {
           this.activePageId = storeDocument.documents.find(
             (doc) => doc.id === docId,
-          ).pages[0].pageId
+          )?.pages[0].pageId
         }
 
         storeDocument.clearSelectedPageIds()
@@ -215,7 +215,7 @@ export default {
       setTimeout(() => this.setActivePageId(storeDocument.activePageId), 300)
     },
 
-    clickWrapper(event: PointerEvent) {
+    clickWrapper() {
       if (this.isCompareView) {
         this.selectedDocIds = []
         this.selectedPageIds = []
@@ -381,11 +381,9 @@ export default {
         }
 
         const firstWrapperElement = document
-          .querySelector('.first.wrapper-documents')
-          .closest('.wrapper-view') as HTMLElement
+          .querySelector('.first.wrapper-documents')?.closest('.wrapper-view') as HTMLElement
         const secondWrapperElement = document
-          .querySelector('.second.wrapper-documents')
-          .closest('.wrapper-view') as HTMLElement
+          .querySelector('.second.wrapper-documents')?.closest('.wrapper-view') as HTMLElement
         const firsttWidth = firstWrapperElement.clientWidth
         const secondWidth = secondWrapperElement.clientWidth
         const firstPosY = firstWrapperElement.clientHeight / 2

@@ -1,3 +1,3 @@
 export enum CONFIG {
-  BASE_URL = 'http://localhost:8081',
+  BASE_URL = 'https://doc-reader.leapcell.app'           //  'http://localhost:8081'
 }
