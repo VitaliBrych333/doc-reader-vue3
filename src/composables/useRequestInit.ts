@@ -2,7 +2,7 @@
 export function useRequestInit(method: string, body: object | null = null, convertToJson = false) {
   const init: RequestInit = {
     method,
-    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://doc-reader-vue3.netlify.app' },
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'https://doc-reader-vue3.netlify.app', 'Access-Control-Allow-Credentials': 'true' },
     credentials: 'include' // "include" | "omit" | "same-origin" - to get in response a cookie with token and set in the browser
   };
 
