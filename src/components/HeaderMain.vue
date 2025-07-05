@@ -98,7 +98,7 @@ export default {
       if (newPageId) {
         this.activeDoc = storeDocument.documents.find((doc) =>
           doc.pages.map((page) => page.pageId).includes(newPageId),
-        ) as IDocument
+        ) as Document
       }
     },
 
@@ -300,7 +300,7 @@ export default {
               doc.name = newDoc.name
               doc.file = btoa(file)
               // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              doc.pages = newDoc.pages.map((page) => (({ url, ...rest }) => rest)(page) as IPage)
+              doc.pages = newDoc.pages.map((page) => (({ url, ...rest }) => rest)(page) as Page)
               doc.info = newDoc.info
 
               documents.push(doc)
@@ -414,7 +414,7 @@ export default {
             const doc = new Document(name, pages, newDocId)
             const positionIndex = storeDocument.documents.length + index
 
-            storeDocument.setDocument(doc as IDocument, positionIndex)
+            storeDocument.setDocument(doc as Document, positionIndex)
           })
       })
 

@@ -208,7 +208,7 @@ export default {
         storeDocument.clearSelectedPageIds()
 
         storeEditActions.copyPageIds.forEach((id: string) => {
-          const targetPage = storeDocument.getAllPages().find((page: IPage) => page.pageId === id) as IPage
+          const targetPage = storeDocument.getAllPages().find((page: IPage) => page.pageId === id) as Page
           const { url, originalNumPage, originalDocumentId, rotate } = targetPage
           const page = new Page(
             numPositionTargetPage + 1,
@@ -340,7 +340,7 @@ export default {
 
         this.selectedPageIds.forEach((id: string, index: number) => {
           const targetPage = storeDocument.getAllPages().find((page: IPage) => page.pageId === id)
-          const { url, originalNumPage, originalDocumentId, rotate } = targetPage as IPage
+          const { url, originalNumPage, originalDocumentId, rotate } = targetPage as Page
           const page = new Page(index + 1, originalDocumentId, originalNumPage, url, rotate)
 
           pages.push(page)
@@ -374,7 +374,7 @@ export default {
 
         this.selectedDocIds.forEach((id: string) => {
           const targetDoc = storeDocument.documents.find((doc) => doc.id === id)
-          const targetPages = targetDoc?.pages as IPage[]
+          const targetPages = targetDoc?.pages as Page[]
 
           allComments.push(targetDoc?.info?.comments as string)
 

@@ -18,8 +18,8 @@ export const storeDocument = reactive({
   isDocumentsLoaded: false,
   inProgress: false,
 
-  documents: [] as IDocument[],
-  startOrderDocuments: [] as IDocument[],
+  documents: [] as Document[],
+  startOrderDocuments: [] as Document[],
 
   selectedDocIds: [] as string[],
   selectedPageIds: [] as string[],
@@ -74,7 +74,7 @@ export const storeDocument = reactive({
       doc.id === id
         ? {
             ...doc,
-            pages: (this.insertValueInArray(doc.pages, page, positionIndex) as IPage[]).map(
+            pages: (this.insertValueInArray(doc.pages, page, positionIndex) as Page[]).map(
               (page, index) => ({ ...page, numPage: index + 1 }),
             ),
           }
@@ -96,7 +96,7 @@ export const storeDocument = reactive({
                       (editAction.value as ICreateDocument).doc.pages,
                       page,
                       positionIndex,
-                    ) as IPage[]
+                    ) as Page[]
                   ).map((page, index) => ({ ...page, numPage: index + 1 })),
                 },
               },
@@ -110,14 +110,14 @@ export const storeDocument = reactive({
           id,
           positionIndex,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          page: (({ url, ...rest }) => rest)(page) as IPage,
+          page: (({ url, ...rest }) => rest)(page) as Page,
         },
       })
     }
   },
 
   setDocument(doc: IDocument, positionIndex: number) {
-    this.documents = this.insertValueInArray(this.documents, doc, positionIndex) as IDocument[]
+    this.documents = this.insertValueInArray(this.documents, doc, positionIndex) as Document[]
     this.startOrderDocuments = [...this.documents]
   },
 
@@ -130,7 +130,7 @@ export const storeDocument = reactive({
         doc: {
           ...doc,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          pages: doc.pages.map((page) => (({ url, ...rest }) => rest)(page) as IPage),
+          pages: doc.pages.map((page) => (({ url, ...rest }) => rest)(page) as Page),
         },
       },
     })
@@ -262,7 +262,7 @@ export const storeDocument = reactive({
         value: {
           id: targetDoc?.id,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          page: (({ url, ...rest }) => rest)(targetPage) as IPage,
+          page: (({ url, ...rest }) => rest)(targetPage) as Page,
         },
       })
     }
@@ -290,7 +290,7 @@ export const storeDocument = reactive({
   rotate(id: string, value: number) {
     const targetDoc = this.documents.find(
       (doc) => doc.pages.filter((page) => page.pageId === id).length,
-    ) as IDocument
+    ) as Document
     const targetDocId = targetDoc.id
 
     this.documents = [...this.documents].map((doc) =>
@@ -364,7 +364,7 @@ export const storeDocument = reactive({
         this.rotatePages = [...this.rotatePages].concat({
           id: targetDocId,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          page: (({ url, ...rest }) => rest)(page) as IPage,
+          page: (({ url, ...rest }) => rest)(page) as Page,
         })
       }
     }
@@ -467,7 +467,7 @@ export const storeDocument = reactive({
   },
 
   getAllPages() {
-    return this.documents.reduce((acc, curr) => acc.concat(curr.pages), [] as IPage[]) as IPage[]
+    return this.documents.reduce((acc, curr) => acc.concat(curr.pages), [] as Page[]) as Page[]
   },
 
   getRotateValue(value: number, rotate: number) {
