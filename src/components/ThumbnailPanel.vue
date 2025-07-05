@@ -42,9 +42,9 @@ export default {
   },
 
   methods: {
-    clickDocument(event: PointerEvent, docId: string) {
+    clickDocument(event: MouseEvent, docId: string) {
       if (!storeDocument.selectedDocIds.includes(docId)) {
-        const pageId = storeDocument.documents.find(doc => doc.id === docId).pages[0].pageId
+        const pageId = storeDocument.documents.find(doc => doc.id === docId)?.pages[0]?.pageId
         this.$emit('setActivePageId', pageId)
       }
 
@@ -98,7 +98,7 @@ export default {
       <div
         v-for="doc in storeDocument.documents"
         class="thumbnail-wrapper-document"
-        :key="doc"
+        :key="doc.id"
         :id="`thumbnail-${doc.id}`"
         :class="{
           active: storeDocument.selectedDocIds.includes(doc.id),
@@ -118,7 +118,7 @@ export default {
         <div class="wrapper-pages">
           <div
             v-for="page in doc.pages"
-            :key="page"
+            :key="page.pageId"
             class="wrapper-page-view"
             :class="{
               'active-page': storeDocument.selectedPageIds.includes(page.pageId),

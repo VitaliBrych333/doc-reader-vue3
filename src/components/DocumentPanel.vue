@@ -33,12 +33,12 @@ export default {
           return 'Date is required.'
         },
       ],
-      docName: null,
-      docId: null,
-      comments: null,
-      author: null,
-      dateCreated: null,
-      dateModified: null
+      docName: null as unknown as string,
+      docId: null as unknown as string,
+      comments: null as unknown as string,
+      author: null as unknown as string,
+      dateCreated: null as unknown as Date,
+      dateModified: null as unknown as Date
     }
   },
 
@@ -79,7 +79,7 @@ export default {
       this.showRename = false
     },
 
-    updateDate(id: string, newDate: Date) {
+    updateDate(id: string, newDate: string) {
       if (newDate) {
         this.updateInfo(id)
       }

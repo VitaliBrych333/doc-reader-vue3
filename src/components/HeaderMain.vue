@@ -10,7 +10,7 @@ import { ActionName, SortType } from '../shared/actionNames.enum'
 import { PresetsZoomSize, ActionBtn } from '../shared/controls.enum'
 import { storeDocument } from '../store/storeDocument'
 import { useRequestInit } from '../composables/useRequestInit'
-import { IFileDocument, IPage, IReqSaveDocuments } from '../shared/document.interface'
+import type { IFileDocument, IDocument, IPage, IReqSaveDocuments } from '../shared/document.interface'
 import { Document, Page, Prefixes, getNewDocId } from '../utils/utils'
 import { CONFIG } from '../config/config'
 
@@ -63,7 +63,8 @@ export default {
       presetsZoom: [...Object.values(PresetsZoomSize)],
       pathSelectorSelect: `${this.isCompareView ? (this.isFirstViewer ? '.first' : '.second') : ''}.zoom-select-wrapper .select`,
       showZoomOptions: false,
-      actionBtn: null,
+      selectedZoomPreset: null as unknown as string,
+      actionBtn: null as unknown,
       selectedSortType: SortType.NONE,
       sortItems: [
         {
@@ -97,7 +98,7 @@ export default {
       if (newPageId) {
         this.activeDoc = storeDocument.documents.find((doc) =>
           doc.pages.map((page) => page.pageId).includes(newPageId),
-        )
+        ) as IDocument
       }
     },
 
@@ -131,8 +132,8 @@ export default {
   },
 
   methods: {
-    clickDocument(id: string) {
-      const pageId = storeDocument.documents.find((doc) => doc.id === id).pages[0].pageId
+    clickDocument(event: { id: unknown; value: boolean; path: unknown[] }) {
+      const pageId = storeDocument.documents.find((doc) => doc.id === event.id)?.pages[0]?.pageId as string
       this.setActivePageId(pageId)
     },
 
@@ -232,12 +233,12 @@ export default {
           const url = ref()
           url.value = loadingTask
 
-          const pages = []
+          const pages: Page[] = []
           const newDocId = getNewDocId()
 
           for (let i = 0; i < numPages; i++) {
             const numPage = i + 1
-            const page = new Page(numPage, newDocId, numPage, url)
+            const page = new Page(numPage, newDocId, numPage, url as unknown as PDFJS.PDFDocumentLoadingTask)
             pages.push(page)
           }
 
@@ -280,7 +281,7 @@ export default {
 
     getNewDocuments(): Promise<IFileDocument[]> {
       return new Promise((resolve, reject) => {
-        const documents = []
+        const documents: IFileDocument[] = []
         const countNewDocuments = this.newDocuments.length
 
         if (countNewDocuments) {
@@ -322,8 +323,8 @@ export default {
         storeDocument.setInProgress(true)
 
         const newDocuments = this.isEditMode ? []: await this.getNewDocuments()
-        const objUser = localStorage.getItem(document.location.origin)
-        const userId = JSON.parse(objUser).user_Id
+        const objUser = localStorage.getItem(document.location.origin) as string
+        const userId = JSON.parse(objUser).user_Id as string
         const data: IReqSaveDocuments = {
           userId,
           newDocuments,
@@ -371,11 +372,11 @@ export default {
       this.$router.push({ name: 'login' })
     },
 
-    async handleFileChange(event) {
-      const files = Array.from(event.target.files)
+    async handleFileChange(event: Event) {
+      const files = Array.from((event.target as HTMLInputElement).files as FileList)
       let countError = 0
 
-      const docsLoadingTask = []
+      const docsLoadingTask = [] as { name: string, loadingTask: PDFJS.PDFDocumentLoadingTask }[]
 
       files.forEach((file: File) => {
         if (file.type !== 'application/pdf') {
@@ -400,20 +401,20 @@ export default {
             const url = ref()
             url.value = docLoading.loadingTask
 
-            const pages = []
+            const pages: Page[] = []
             const newDocId = getNewDocId()
             const { name } = docLoading
 
             for (let i = 0; i < numPages; i++) {
               const numPage = i + 1
-              const page = new Page(numPage, newDocId, numPage, url)
+              const page = new Page(numPage, newDocId, numPage, url as unknown as PDFJS.PDFDocumentLoadingTask)
               pages.push(page)
             }
 
             const doc = new Document(name, pages, newDocId)
             const positionIndex = storeDocument.documents.length + index
 
-            storeDocument.setDocument(doc, positionIndex)
+            storeDocument.setDocument(doc as IDocument, positionIndex)
           })
       })
 
@@ -446,11 +447,10 @@ export default {
           // for uploaded but not yet saved in DB docs
           if (docId.startsWith(Prefixes.NEW_DOC)) {
             const doc = storeDocument.documents.find((doc) => doc.id === docId)
-            const pdfDocumentProxy = await doc.pages[0].url.promise
+            const pdfDocumentProxy = await doc?.pages[0].url.promise
 
-            pdfDocumentProxy
-              .getData()
-              .then((arrayBuffer: Uint8Array) => this.downloadDocument(arrayBuffer, doc.name))
+            pdfDocumentProxy?.getData()
+              .then((arrayBuffer: Uint8Array) => this.downloadDocument(arrayBuffer, doc?.name as string))
           } else {
             // for saved in DB docs
             const response = await fetch(
@@ -496,11 +496,10 @@ export default {
           // for uploaded but not yet saved in DB docs
           if (docId.startsWith(Prefixes.NEW_DOC)) {
             const doc = storeDocument.documents.find((doc) => doc.id === docId)
-            const pdfDocumentProxy = await doc.pages[0].url.promise
+            const pdfDocumentProxy = await doc?.pages[0].url.promise
 
-            pdfDocumentProxy
-              .getData()
-              .then((arrayBuffer: Uint8Array) => this.printDocument(arrayBuffer, doc.name))
+            pdfDocumentProxy?.getData()
+              .then((arrayBuffer: Uint8Array) => this.printDocument(arrayBuffer, doc?.name as string))
           } else {
             // for saved in DB docs
             const response = await fetch(
@@ -531,7 +530,7 @@ export default {
 
     printDocument(arrayBuffer: Uint8Array, name: string) {
       const url = URL.createObjectURL(new Blob([arrayBuffer], { type: 'application/pdf' }))
-      const w = window.open(url, name, 'width=800, height=800')
+      const w = window.open(url, name, 'width=800, height=800') as Window
 
       try {
         w.addEventListener('beforeunload', () => URL.revokeObjectURL(url), { once: true })
@@ -541,7 +540,7 @@ export default {
       }
     },
 
-    sort(type: string) {
+    sort(type: SortType) {
       this.selectedSortType = type
       storeDocument.sortDocuments(type)
     },
@@ -1020,7 +1019,7 @@ export default {
             class="mr-1"
             label="Search"
             density="compact"
-            hide-details="true"
+            hide-details
             clearable
             variant="outlined"
             @update:modelValue="storeDocument.searchDocuments($event)"
@@ -1045,8 +1044,8 @@ export default {
 
             <v-list>
               <v-list-item
-                v-for="(item, i) in sortItems"
-                :key="i"
+                v-for="item in sortItems"
+                :key="item.title"
                 :value="item.title"
                 :active="item.title === selectedSortType"
                 @click="sort(item.title)"
@@ -1059,7 +1058,7 @@ export default {
           </v-menu>
         </div>
 
-        <v-list @click:select="clickDocument($event.id)">
+        <v-list @click:select="clickDocument($event)">
           <v-list-item
             v-for="(item, index) in storeDocument.documents.map((doc) => ({
               title: doc.name.replace(/\.[^/.]+$/, ''),

@@ -467,7 +467,7 @@ export const storeDocument = reactive({
   },
 
   getAllPages() {
-    return this.documents.reduce((acc, curr) => acc.concat(curr.pages), [] as IPage[])
+    return this.documents.reduce((acc, curr) => acc.concat(curr.pages), [] as IPage[]) as IPage[]
   },
 
   getRotateValue(value: number, rotate: number) {

@@ -2,7 +2,7 @@
 export default {
   data() {
     return {
-      error: null,
+      error: null as unknown,
       errorMessage: '',
     };
   },

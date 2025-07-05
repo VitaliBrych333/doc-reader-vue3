@@ -68,7 +68,7 @@ export default {
     },
 
     createActive() {
-      return this.countSelectedPageIds || this.countSelectedDocIds > 1
+      return !!(this.countSelectedPageIds || this.countSelectedDocIds > 1)
     },
 
     renameActive() {
@@ -139,7 +139,7 @@ export default {
     },
 
     rename() {
-      const targetDoc = storeDocument.documents.find((doc) => doc.id === this.selectedDocIds[0])
+      const targetDoc = storeDocument.documents.find((doc) => doc.id === this.selectedDocIds[0]) as Document
       this.showWindowDialog('Rename document', ActionName.RENAME, getDocName(targetDoc.name))
     },
 
@@ -183,21 +183,18 @@ export default {
         const pageId = this.selectedPageIds[this.countSelectedPageIds - 1]
         const targetDoc = storeDocument.documents.find((doc) =>
           doc.pages.map((page) => page.pageId).includes(pageId),
-        )
+        ) as Document
         storeDocument.clearSelectedPageIds()
 
         storeEditActions.cutPageIds.forEach((id: string, index: number) => {
-          const page = storeDocument.getAllPages().find((page: IPage) => page.pageId === id)
+          const page = storeDocument.getAllPages().find((page: IPage) => page.pageId === id) as Page
           storeDocument.removePage(id)
           const numPositionTargetPage =
             storeDocument.documents
-              .find((doc) => doc.id === targetDoc.id)
-              .pages.findIndex((page) => page.pageId === pageId) +
-            index +
-            1
+              .find((doc) => doc.id === targetDoc.id)?.pages?.findIndex((page) => page.pageId === pageId) ?? 0 + index + 1
 
           storeDocument.addPage(targetDoc.id, page, numPositionTargetPage)
-          storeDocument.addSelectedPageId(page.pageId, true)
+          storeDocument.addSelectedPageId(page?.pageId, true)
         })
 
         storeEditActions.clearCutPageIds()
@@ -206,12 +203,12 @@ export default {
         const pageId = this.selectedPageIds[this.countSelectedPageIds - 1]
         const targetDoc = storeDocument.documents.find((doc) =>
           doc.pages.map((page) => page.pageId).includes(pageId),
-        )
-        let numPositionTargetPage = targetDoc.pages.findIndex((page) => page.pageId === pageId) + 1
+        ) as Document
+        let numPositionTargetPage = targetDoc?.pages.findIndex((page) => page.pageId === pageId) + 1
         storeDocument.clearSelectedPageIds()
 
         storeEditActions.copyPageIds.forEach((id: string) => {
-          const targetPage = storeDocument.getAllPages().find((page: IPage) => page.pageId === id)
+          const targetPage = storeDocument.getAllPages().find((page: IPage) => page.pageId === id) as IPage
           const { url, originalNumPage, originalDocumentId, rotate } = targetPage
           const page = new Page(
             numPositionTargetPage + 1,
@@ -234,7 +231,7 @@ export default {
         storeDocument.clearSelectedDocIds()
 
         storeEditActions.cutDocIds.forEach((documentId: string, index: number) => {
-          const doc = storeDocument.documents.find((doc) => doc.id === documentId)
+          const doc = storeDocument.documents.find((doc) => doc.id === documentId) as Document
           storeDocument.removeDocument(doc.id)
           const positionInsert =
             storeDocument.documents.findIndex((doc) => doc.id === docId) + index + 1
@@ -251,10 +248,10 @@ export default {
         storeDocument.clearSelectedDocIds()
 
         storeEditActions.copyDocIds.forEach((documentId: string) => {
-          const targetDoc = storeDocument.documents.find((doc) => doc.id === documentId)
+          const targetDoc = storeDocument.documents.find((doc) => doc.id === documentId) as Document
           const { name, pages, info } = targetDoc
           const { comments, author, dateCreated } = info
-          const newPages = []
+          const newPages: Page[] = []
 
           positionInsert += 1
 
@@ -339,11 +336,11 @@ export default {
 
     handleCreate(docName: string, docPositionInsert: number, fromSplit = false) {
       if (this.countSelectedPageIds) {
-        const pages = []
+        const pages: Page[] = []
 
         this.selectedPageIds.forEach((id: string, index: number) => {
           const targetPage = storeDocument.getAllPages().find((page: IPage) => page.pageId === id)
-          const { url, originalNumPage, originalDocumentId, rotate } = targetPage
+          const { url, originalNumPage, originalDocumentId, rotate } = targetPage as IPage
           const page = new Page(index + 1, originalDocumentId, originalNumPage, url, rotate)
 
           pages.push(page)
@@ -369,17 +366,17 @@ export default {
         storeDocument.addSelectedDocId(doc.id)
 
       } else if (this.countSelectedDocIds) {
-        const pages = []
-        const allComments = []
+        const pages: Page[] = []
+        const allComments: string[] = []
         const positionInsert = storeDocument.documents.findIndex(
           (doc) => doc.id === this.selectedDocIds[0],
         )
 
         this.selectedDocIds.forEach((id: string) => {
           const targetDoc = storeDocument.documents.find((doc) => doc.id === id)
-          const targetPages = targetDoc.pages
+          const targetPages = targetDoc?.pages as IPage[]
 
-          allComments.push(targetDoc.info.comments)
+          allComments.push(targetDoc?.info?.comments as string)
 
           targetPages.forEach((pageDoc) => {
             const { url, originalNumPage, originalDocumentId, rotate } = pageDoc
@@ -410,12 +407,12 @@ export default {
       const targetDoc = storeDocument.documents.find((doc) =>
         doc.pages.map((page) => page.pageId).includes(pageId),
       )
-      const indexTargetPage = targetDoc.pages.findIndex((page) => page.pageId === pageId)
-      const indexTargetDoc = storeDocument.documents.findIndex((doc) => doc.id === targetDoc.id)
+      const indexTargetPage = targetDoc?.pages.findIndex((page) => page.pageId === pageId)
+      const indexTargetDoc = storeDocument.documents.findIndex((doc) => doc.id === targetDoc?.id)
 
       storeDocument.clearSelectedPageIds()
 
-      targetDoc.pages
+      targetDoc?.pages
         .slice(indexTargetPage)
         .forEach((page) => storeDocument.addSelectedPageId(page.pageId, true))
 

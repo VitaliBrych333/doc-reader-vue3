@@ -8,7 +8,7 @@ import { storeDocument } from '../store/storeDocument'
 import { storeEditActions } from '../store/storeEditActions'
 import { useRequestInit } from '../composables/useRequestInit'
 import { PresetsZoomSize } from '../shared/controls.enum'
-import { IPage, IRespGetDocuments } from '../shared/document.interface'
+import type { IPage, IRespGetDocuments } from '../shared/document.interface'
 import { Document, Page } from '../utils/utils'
 import { CONFIG } from '../config/config'
 
@@ -29,8 +29,8 @@ export default {
       storeEditActions,
       indexActiveFirstPageId: 0,
       scale: this.isWrappedView ? 50 : this.isEditMode ? 35 : 100,
-      selectedPageIds: [], // for CompareView
-      selectedDocIds: [], // for CompareView
+      selectedPageIds: [] as string[], // for CompareView
+      selectedDocIds: [] as string[], // for CompareView
       isLastPageLoaded: false,
       annotations: false,
       scrollTop: {
@@ -38,7 +38,7 @@ export default {
         secondViewer: this.isCompareView ? 52 : 0,
       },
       pathViewer: this.isCompareView ? (this.isFirstViewer ? '.first' : '.second') : '',
-      activePageId: null,
+      activePageId: null as unknown as string,
     }
   },
 
@@ -82,8 +82,8 @@ export default {
   methods: {
     async loadDocuments(useProgress: boolean) {
       try {
-        const objUser = localStorage.getItem(document.location.origin)
-        const userId = JSON.parse(objUser).user_Id
+        const objUser = localStorage.getItem(document.location.origin) as string
+        const userId = JSON.parse(objUser).user_Id as string
 
         if (useProgress) {
           storeDocument.setInProgress(true)
@@ -98,7 +98,7 @@ export default {
         const documents = data ?? []
 
         if (documents.length) {
-          const docsLoadingTask = []
+          const docsLoadingTask: { doc: IRespGetDocuments, loadingTask: PDFJS.PDFDocumentLoadingTask }[] = []
 
           documents.forEach(async (doc) => {
             const binaryFile = atob(doc.file)
@@ -130,12 +130,12 @@ export default {
                 const url = ref()
                 url.value = docLoading.loadingTask
 
-                const pages = []
+                const pages: Page[] = []
                 const { documentId, name, info } = docLoading.doc
 
                 for (let i = 0; i < numPages; i++) {
                   const numPage = i + 1
-                  const page = new Page(numPage, documentId, numPage, url)
+                  const page = new Page(numPage, documentId, numPage, url as unknown as PDFJS.PDFDocumentLoadingTask)
                   pages.push(page)
                 }
 
@@ -167,7 +167,7 @@ export default {
       this.loadDocuments(true)
     },
 
-    clickDocument(event: PointerEvent, docId: string) {
+    clickDocument(event: MouseEvent, docId: string) {
       if (this.isCompareView) {
         this.selectedPageIds = []
         this.selectedDocIds = event.ctrlKey
@@ -179,7 +179,7 @@ export default {
         if (!storeDocument.selectedDocIds.includes(docId)) {
           this.activePageId = storeDocument.documents.find(
             (doc) => doc.id === docId,
-          )?.pages[0].pageId
+          )?.pages[0].pageId as string
         }
 
         storeDocument.clearSelectedPageIds()
@@ -227,8 +227,8 @@ export default {
     },
 
     zoom(value: number) {
-      this.scale += value
-      this.$refs.refControls.setValueZoomInSelect(`${this.scale}%`, this.scale)
+      this.scale += value;
+      (this.$refs.refControls as typeof HeaderMain).setValueZoomInSelect(`${this.scale}%`, this.scale)
     },
 
     selectZoom(zoomPreset: string) {
@@ -237,11 +237,11 @@ export default {
           this.isCompareView ? (this.isFirstViewer ? '.first' : '.second') : ''
         }.wrapper-documents`,
       )
-      const pages = wrapperDocuments.querySelectorAll('.page')
+      const pages = wrapperDocuments?.querySelectorAll('.page') as NodeListOf<Element>
       let scaleIndex = 1
 
       if (zoomPreset === PresetsZoomSize.HEIGHT) {
-        const heigthWrapperDocuments = wrapperDocuments.clientHeight - 10 // add margin 10px
+        const heigthWrapperDocuments = wrapperDocuments?.clientHeight ?? 0 - 10 // add margin 10px
         const maxHeigthPage = Math.max.apply(
           null,
           Array.from(pages).map((page) => page.clientHeight),
@@ -249,7 +249,7 @@ export default {
         scaleIndex = Math.round((heigthWrapperDocuments / maxHeigthPage) * 100)
         this.scale = Math.round((this.scale * scaleIndex) / 100)
       } else if (zoomPreset === PresetsZoomSize.WIDTH) {
-        const withWrapperDocuments = wrapperDocuments.clientWidth - 34 // add margin 12px and padding 5px
+        const withWrapperDocuments = wrapperDocuments?.clientWidth ?? 0 - 34 // add margin 12px and padding 5px
         const maxWidthPage = Math.max.apply(
           null,
           Array.from(pages).map((page) => page.clientWidth),
@@ -262,23 +262,23 @@ export default {
 
       const targetWidth = this.isCompareView
         ? this.isFirstViewer
-          ? wrapperDocuments.clientWidth / 2
-          : wrapperDocuments.clientWidth * 1.5
-        : wrapperDocuments.clientWidth / 2
+          ? wrapperDocuments?.clientWidth ?? 0 / 2
+          : wrapperDocuments?.clientWidth ?? 0 * 1.5
+        : wrapperDocuments?.clientWidth ?? 0 / 2
 
       const targetElement = document.elementFromPoint(targetWidth, (window.innerHeight - 64) / 2) // 64px - header height
 
-      const middlePage = targetElement.closest('.page') || targetElement.querySelector('.page')
+      const middlePage = targetElement?.closest('.page') || targetElement?.querySelector('.page')
 
       requestAnimationFrame(() => {
         const targetPage = storeDocument
           .getAllPages()
           .find((page: IPage) => page.pageId === middlePage?.id)
         middlePage?.scrollIntoView({ behavior: 'auto', block: 'start' })
-        wrapperDocuments.scrollBy(0, targetPage?.numPage === 1 ? -60 : -5)
-      })
+        wrapperDocuments?.scrollBy(0, targetPage?.numPage === 1 ? -60 : -5)
+      });
 
-      this.$refs.refControls.setValueZoomInSelect(zoomPreset, this.scale)
+      (this.$refs.refControls as typeof HeaderMain).setValueZoomInSelect(zoomPreset, this.scale)
     },
 
     rotate(value: number) {
@@ -286,24 +286,21 @@ export default {
         if (this.selectedDocIds.length) {
           this.selectedDocIds.forEach((id: string) =>
             storeDocument.documents
-              .find((doc) => doc.id === id)
-              .pages.forEach((page) =>
-                this.$refs.refPage
-                  .find((refPage) => refPage.page.pageId === page.pageId)
-                  .rotatePage(value),
+              .find((doc) => doc.id === id)?.pages.forEach((page) =>
+                (this.$refs.refPage as typeof PageView[])
+                  .find((refPage: typeof PageView) => refPage.page.pageId === page.pageId)?.rotatePage(value),
               ),
           )
         } else {
           this.selectedPageIds.forEach((id: string) =>
-            this.$refs.refPage.find((refPage) => refPage.page.pageId === id).rotatePage(value),
+            (this.$refs.refPage as typeof PageView[]).find((refPage: typeof PageView) => refPage.page.pageId === id)?.rotatePage(value),
           )
         }
       } else {
         if (storeDocument.selectedDocIds.length) {
           storeDocument.selectedDocIds.forEach((id) =>
             storeDocument.documents
-              .find((doc) => doc.id === id)
-              .pages.forEach((page) => storeDocument.rotate(page.pageId, value)),
+              .find((doc) => doc.id === id)?.pages.forEach((page) => storeDocument.rotate(page.pageId, value)),
           )
         } else {
           storeDocument.selectedPageIds.forEach((id) => storeDocument.rotate(id, value))
@@ -330,8 +327,7 @@ export default {
     navigateToPage(pageId: string) {
       const element = this.isCompareView
         ? (document
-            .querySelector(`.wrapper-documents${this.pathViewer}`)
-            .querySelector(`#${pageId}`) as HTMLElement)
+            .querySelector(`.wrapper-documents${this.pathViewer}`)?.querySelector(`#${pageId}`) as HTMLElement)
         : (document.querySelector(`.wrapper-documents #${pageId}`) as HTMLElement)
       const elementWrapper = element?.closest('.wrapper-documents') as HTMLElement
 
@@ -347,7 +343,7 @@ export default {
     },
 
     handleScroll(event: Event) {
-      let elementWrapperPage: HTMLElement = null
+      let elementWrapperPage = null
 
       if (this.isCompareView) {
         const targetElement = event.target as HTMLElement
@@ -390,18 +386,18 @@ export default {
         const secondPosY = secondWrapperElement.clientHeight / 2
         const firstOffsetLeft = firstWrapperElement.offsetLeft
         const secondOffsetLeft =
-          secondWrapperElement.offsetLeft + firstWrapperElement.closest('.viewer').clientWidth
+          secondWrapperElement.offsetLeft + (firstWrapperElement?.closest('.viewer')?.clientWidth ?? 0)
         const firstPosX = firsttWidth / 2 + firstOffsetLeft
         const secondPosX = secondWidth / 2 + secondOffsetLeft
 
         elementWrapperPage = this.isFirstViewer
-          ? document.elementFromPoint(firstPosX, firstPosY)?.closest('.wrapper-page')
-          : document.elementFromPoint(secondPosX, secondPosY)?.closest('.wrapper-page')
+          ? document.elementFromPoint(firstPosX, firstPosY)?.closest('.wrapper-page') as HTMLElement
+          : document.elementFromPoint(secondPosX, secondPosY)?.closest('.wrapper-page') as HTMLElement
 
         if (!elementWrapperPage) {
           elementWrapperPage = this.isFirstViewer
-            ? document.elementFromPoint(firstOffsetLeft + 1, firstPosY)?.closest('.wrapper-page')
-            : document.elementFromPoint(secondOffsetLeft + 2, secondPosY)?.closest('.wrapper-page') // 1px + 1px separator width
+            ? document.elementFromPoint(firstOffsetLeft + 1, firstPosY)?.closest('.wrapper-page') as HTMLElement
+            : document.elementFromPoint(secondOffsetLeft + 2, secondPosY)?.closest('.wrapper-page') as HTMLElement // 1px + 1px separator width
         }
       } else {
         const wrapperElement = document.querySelector('.wrapper-view') as HTMLElement
@@ -409,12 +405,12 @@ export default {
         const posX = wrapperElement.clientWidth / 2 + wrapperElementOffsetLeft
         const posY = wrapperElement.clientHeight / 2
 
-        elementWrapperPage = document.elementFromPoint(posX, posY)?.closest('.wrapper-page')
+        elementWrapperPage = document.elementFromPoint(posX, posY)?.closest('.wrapper-page') as HTMLElement
 
         if (!elementWrapperPage) {
           elementWrapperPage = document
             .elementFromPoint(wrapperElementOffsetLeft + 1, posY)
-            ?.closest('.wrapper-page')
+            ?.closest('.wrapper-page') as HTMLElement
         }
       }
 
@@ -501,7 +497,7 @@ export default {
       <div
         v-for="(doc, indexDoc) in storeDocument.documents"
         class="wrapper-document"
-        :key="doc"
+        :key="doc.id"
         :id="`${doc.id}`"
         :class="{
           'wrapped-view-documents': isWrappedView,
@@ -528,7 +524,7 @@ export default {
         <div :class="{ 'wrapped-view-pages': isEditMode || isWrappedView }" class="wrapper-pages">
           <div
             v-for="page in doc.pages"
-            :key="page"
+            :key="page.pageId"
             class="wrapper-page-view"
             :class="{
               'active-page': isCompareView

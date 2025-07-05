@@ -8,7 +8,7 @@ export enum Prefixes {
 }
 
 export function getDocName(name: string) {
-  return name?.match(/([^\/]+)(?=\.\w+$)/)?.[0]
+  return name?.match(/([^\/]+)(?=\.\w+$)/)?.[0] as string
 }
 
 export function getNewDocId() {
@@ -48,7 +48,7 @@ export class Document {
   id: string
   name: string
   pages: IPage[]
-  info: IInfo | null
+  info: IInfo
 
   constructor(
     name: string,
